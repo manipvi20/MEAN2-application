@@ -1,7 +1,7 @@
 {
-  "name": "angular2-starter",
+  "name": "mean2-application-starter",
   "version": "0.3.0",
-  "license": "MIT",
+  "license": "",
   "main": "server.js",
   "private": true,
   "scripts": {
