@@ -32,7 +32,7 @@ If you are decided to use `mlab` mongo db, follow the below steps,<br><br>
 Create account in `mlab`<br>
 Create DB and Collections<br>
 Uncomment line no 5 in routes/tasks.js and mention your db username and password <br>
-Finally Comment the 4th line.<br>
+Finally Comment the 4th line in routes/tasks.js.<br>
 
 
 
