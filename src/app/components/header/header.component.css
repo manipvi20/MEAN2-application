@@ -1,0 +1,26 @@
+.header {
+    height: 82px;
+    /*background-color: #3b5998;*/
+    background-color: #24292e;
+    color: #FFFFFF;
+}
+
+.login_panel {
+    margin-top: 10px;
+}
+.login_panel label {
+    font-size: 13px;
+    font-weight: normal;
+}
+.login_panel input.username, .login_panel input.password   {
+    height: 21px;
+    width: 100%;
+    border: none;
+    color: #000;
+}
+.login_panel .login_submit {
+    border: 1px solid #555;
+    margin-top: 23px;
+    color: #000;
+}
+    

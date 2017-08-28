@@ -1,0 +1,21 @@
+
+.clickable {
+    cursor: pointer;
+}
+
+.thumbnail {
+    border-radius: 100%;
+}
+
+.nopadding {
+    padding: 0;
+}
+.form-control, input {
+    border: 1px solid #ccc
+}
+.container {
+    max-width: 980px;
+}
+.body_wrapper {
+  padding: 0;
+}

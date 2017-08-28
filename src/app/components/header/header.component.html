@@ -1,0 +1,38 @@
+<div class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-lg-6 col-sm-5">
+                <div class="logo">
+                    <h1>Test</h1>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6 hidden-xs">
+                <div class="login_panel">
+                    <form (ngSubmit)="login()">
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-lg-5 col-md-5 col-sm-5">
+                                    <div class="form-group">
+                                        <label for="username">Email or Username</label>
+                                        <input type="text" name="username" id="username" class="username"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5 col-md-5 col-sm-5">
+                                    <div class="form-group">
+                                        <label for="password">Password</label>
+                                        <input type="password" name="password" id="password" class="password"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-2 nopadding">
+                                    <div class="form-group">
+                                        <button type="submit" name="login_submit" id="login_submit" class="login_submit btn btn-basic btn-xs">Login</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
