@@ -16,11 +16,10 @@ Create Db `admin`<br>
 Create Collection `info`<br>
 Collection Structure would be<br><br>
 
-_id: 598db141c5dd9f33830bfd65 ---- It will be created automatically<br>
 name:"Manikandan"<br>
 email:"manipvi20@gmail.com"<br>
 age:27<br>
-company:"HCLTECH"<br>
+company:"Test"<br>
 username:"manipvi20"<br>
 password:"admin"<br>
 secret_ques:"what is your first pet name?"<br>
