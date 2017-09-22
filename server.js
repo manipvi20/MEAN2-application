@@ -1,13 +1,14 @@
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
-
 //task files
 var index = require('./routes/index');
 var tasks = require('./routes/tasks');
 
 var app = express();
 var port = 8080;
+
+var router = express.Router();
 
 //view engine
 app.set('views', path.join(__dirname, 'views'));
@@ -23,7 +24,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/', index);
 app.use('/api', tasks);
-
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/index.html'));
+});
 
 app.listen(port, function(){
     console.log('app running in ' + port);

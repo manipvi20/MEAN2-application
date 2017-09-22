@@ -26,9 +26,22 @@ router.get('/info/:id', function(req, res, next){
 });
 
 
+router.get('/userinfo/:username', function(req, res, next){
+    db.info.findOne({username: req.params.username},function(err, info){
+        if(err){
+            res.send(err);
+        }
+        
+        res.json(info);
+    });
+});
+
+
+
 //Post method
 router.post('/info', function(req, res, next) {
     var info = req.body;
+    console.log(info);
     if(!info.name) {
         res.status(400);
         res.json({

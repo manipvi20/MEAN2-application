@@ -1,7 +1,7 @@
 {
-  "name": "mean2-application-starter",
+  "name": "angular2-starter",
   "version": "0.3.0",
-  "license": "",
+  "license": "MIT",
   "main": "server.js",
   "private": true,
   "scripts": {
@@ -24,11 +24,13 @@
     "core-js": "2.4.1",
     "ejs": "^2.5.7",
     "express": "^4.15.4",
+    "express-jwt": "^5.3.0",
     "global-tunnel": "^1.2.0",
     "jquery": "^3.2.1",
     "mongodb": "^2.2.31",
     "mongojs": "^2.4.1",
     "mongoose": "^4.11.6",
+    "querystring": "^0.2.0",
     "rxjs": "5.0.0-rc.4",
     "zone.js": "0.7.2"
   },
