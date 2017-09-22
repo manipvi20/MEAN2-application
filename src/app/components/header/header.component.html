@@ -3,24 +3,65 @@
         <div class="row">
             <div class="col-md-6 col-lg-6 col-sm-5">
                 <div class="logo">
-                    <h1>Test</h1>
+                    <h1 class="clickable" routerLink="">test</h1>
                 </div>
             </div>
             <div class="col-md-6 col-lg-6 hidden-xs">
-                <div class="login_panel">
-                    <form (ngSubmit)="login()">
+                <div *ngIf="loggedIn" class="loggedin">
+                    <div class="row">
+                        <div class="col-lg-1 cols cols-profile_img nopadding">
+                            <img src="assets/img/{{userDetails.profile_img == 'true' ? userDetails.username : 'no' }}_pf_img_sm.jpg" class="img-rounded" alt="profile_img"/>
+                        </div>
+                        <div class="col-lg-4 cols cols-user_name">
+                            <div class="user_name"><span>{{ userDetails.name}}</span> </div>   
+                        </div>
+                        <div class="col-lg-4 cols cols-user_name">
+                            <div class="user_name clickable">
+                                <i class="glyphicon glyphicon-globe"></i>
+                            </div>
+                            <div class="dropdown user_name clickable">
+                                <i class="glyphicon glyphicon-user dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                </i>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a href="#">Action</a></li>
+                                    <li><a href="#">Another action</a></li>
+                                    <li><a href="#">Something else here</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a class="clickable" (click)="logout()">Logout?</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="login_panel" *ngIf="!loggedIn">
+                    <form [formGroup]="form" (ngSubmit)="login()">
                         <fieldset>
                             <div class="row">
                                 <div class="col-lg-5 col-md-5 col-sm-5">
                                     <div class="form-group">
                                         <label for="username">Email or Username</label>
-                                        <input type="text" name="username" id="username" class="username"/>
+                                        <input type="text" 
+                                        name="username"
+                                        #username
+                                        formControlName="username"
+                                        [(ngModel)] = "user.username"
+                                        id="username" 
+                                        class="username"
+                                        required/>
                                     </div>
                                 </div>
                                 <div class="col-lg-5 col-md-5 col-sm-5">
                                     <div class="form-group">
                                         <label for="password">Password</label>
-                                        <input type="password" name="password" id="password" class="password"/>
+                                        <input type="password" 
+                                        name="password"
+                                        formControlName="password"
+                                        [(ngModel)] = "user.password"
+                                        #password
+                                        id="password" 
+                                        class="password"
+                                        required/>
                                     </div>
                                 </div>
                                 <div class="col-lg-2 col-md-2 nopadding">

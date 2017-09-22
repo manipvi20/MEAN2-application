@@ -23,4 +23,19 @@
     margin-top: 23px;
     color: #000;
 }
-    
+.loggedin > .row {
+    margin: 21px 0;
+}
+.loggedin .cols-user_name {
+    display: table;
+    height: 43px;
+}
+.loggedin .cols-user_name .user_name {
+    display: table-cell;
+    vertical-align: middle;
+    text-transform: capitalize;
+}
+/*.user_name .glyphicon-user {
+    font-size:  18px;
+    color: #fff;
+}*/
