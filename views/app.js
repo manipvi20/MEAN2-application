@@ -49745,12 +49745,14 @@ webpackJsonp([0],[
 	//import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 	var app_component_1 = __webpack_require__(59);
 	var home_component_1 = __webpack_require__(62);
-	var header_component_1 = __webpack_require__(63);
+	var header_component_1 = __webpack_require__(66);
 	var signup_component_1 = __webpack_require__(71);
 	var not_found_component_1 = __webpack_require__(74);
-	var app_routing_1 = __webpack_require__(75);
-	var auth_gaurd_1 = __webpack_require__(76);
-	var info_service_1 = __webpack_require__(65);
+	//pipes
+	var pipes_1 = __webpack_require__(75);
+	var app_routing_1 = __webpack_require__(76);
+	var auth_gaurd_1 = __webpack_require__(77);
+	var info_service_1 = __webpack_require__(64);
 	var component_service_1 = __webpack_require__(67);
 	var AppModule = (function () {
 	    function AppModule() {
@@ -49772,7 +49774,8 @@ webpackJsonp([0],[
 	            home_component_1.HomeComponent,
 	            header_component_1.HeaderComponent,
 	            signup_component_1.SignupComponent,
-	            not_found_component_1.NotFoundComponent
+	            not_found_component_1.NotFoundComponent,
+	            pipes_1.ReversePipe
 	        ],
 	        bootstrap: [app_component_1.AppComponent],
 	        providers: [
@@ -65554,18 +65557,72 @@ webpackJsonp([0],[
 	};
 	var core_1 = __webpack_require__(1);
 	var router_1 = __webpack_require__(29);
-	var header_component_1 = __webpack_require__(63);
+	var forms_1 = __webpack_require__(24);
+	var user_1 = __webpack_require__(63);
+	var info_service_1 = __webpack_require__(64);
+	var header_component_1 = __webpack_require__(66);
 	var HomeComponent = (function () {
-	    function HomeComponent(_router, _activatedRoute, _headerComp) {
+	    function HomeComponent(_router, _formBuilder, _activatedRoute, _adminService, _headerComp, elRef) {
 	        this._router = _router;
+	        this._formBuilder = _formBuilder;
 	        this._activatedRoute = _activatedRoute;
+	        this._adminService = _adminService;
 	        this._headerComp = _headerComp;
+	        this.elRef = elRef;
+	        this.postReply = new user_1.PostReply();
+	        this.newPost = new user_1.NewPost();
+	        this.postnewcomment = _formBuilder.group({
+	            post: ['', forms_1.Validators.minLength]
+	        });
+	        this.newReply = _formBuilder.group({
+	            comment: ['', forms_1.Validators.minLength]
+	        });
 	    }
 	    HomeComponent.prototype.ngOnInit = function () {
 	        this._headerComp.ngOnInit();
-	        var loggedInCheck = localStorage.getItem('username');
+	        this.loggedInCheck = localStorage.getItem('username');
 	        var activateParam = this._activatedRoute.snapshot.params["username"];
-	        activateParam != loggedInCheck ? this._router.navigate(['not-found']) : '';
+	        activateParam != this.loggedInCheck ? this._router.navigate(['not-found']) : '';
+	        this.loadPosts();
+	    };
+	    HomeComponent.prototype.loadPosts = function () {
+	        var _this = this;
+	        this._adminService.getAllPosts().subscribe(function (res) {
+	            _this.posts = res.reverse();
+	        });
+	    };
+	    HomeComponent.prototype.commentForPost = function (post) {
+	        var _this = this;
+	        this.postReply = {
+	            username: this.loggedInCheck,
+	            reply: this.newReply.value.comment
+	        };
+	        this.postReply.username = this.loggedInCheck;
+	        post.replies.unshift(this.postReply);
+	        this._adminService.addNewReply(post._id, this.postReply).subscribe(function (res) { _this.postReply = new user_1.PostReply(); });
+	    };
+	    HomeComponent.prototype.postNewComment = function () {
+	        var _this = this;
+	        this.newPost.username = this.loggedInCheck;
+	        this.newPost.replies = [];
+	        var dummyPosts = {
+	            posts: this.newPost,
+	            profile_img: this._headerComp.userDetails.profile_img
+	        };
+	        this.posts.unshift(dummyPosts);
+	        this._adminService.postNewComment(this.newPost).subscribe(function (res) {
+	            _this.newPost = new user_1.NewPost();
+	            //this.loadPosts()
+	        });
+	    };
+	    HomeComponent.prototype.toggle = function (e, i) {
+	        var userActivityEle = this.elRef.nativeElement.querySelector('.user_activites-' + i);
+	        if (userActivityEle.classList.contains('hidden')) {
+	            userActivityEle.classList.remove('hidden');
+	        }
+	        else {
+	            userActivityEle.classList.add('hidden');
+	        }
 	    };
 	    return HomeComponent;
 	}());
@@ -65576,14 +65633,115 @@ webpackJsonp([0],[
 	        providers: [header_component_1.HeaderComponent]
 	    }),
 	    __metadata("design:paramtypes", [router_1.Router,
+	        forms_1.FormBuilder,
 	        router_1.ActivatedRoute,
-	        header_component_1.HeaderComponent])
+	        info_service_1.AdminServices,
+	        header_component_1.HeaderComponent,
+	        core_1.ElementRef])
 	], HomeComponent);
 	exports.HomeComponent = HomeComponent;
 
 
 /***/ },
 /* 63 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var Login = (function () {
+	    function Login() {
+	    }
+	    return Login;
+	}());
+	exports.Login = Login;
+	var SignUp = (function () {
+	    function SignUp() {
+	    }
+	    return SignUp;
+	}());
+	exports.SignUp = SignUp;
+	var PostReply = (function () {
+	    function PostReply() {
+	    }
+	    return PostReply;
+	}());
+	exports.PostReply = PostReply;
+	var NewPost = (function () {
+	    function NewPost() {
+	    }
+	    return NewPost;
+	}());
+	exports.NewPost = NewPost;
+
+
+/***/ },
+/* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(1);
+	var http_1 = __webpack_require__(28);
+	__webpack_require__(65);
+	var AdminServices = (function () {
+	    function AdminServices(_http) {
+	        this._http = _http;
+	        this._url = "/api/info";
+	        this._userUrl = '/api/userinfo';
+	    }
+	    AdminServices.prototype.getAdmins = function () {
+	        return this._http.get(this._url).map(function (res) { return res.json(); });
+	    };
+	    AdminServices.prototype.getUser = function (username) {
+	        return this._http.get(this._userUrl + "/" + username)
+	            .map(function (res) { return res.json(); });
+	    };
+	    AdminServices.prototype.postUser = function (user) {
+	        console.log(user);
+	        return this._http.post(this._url, user)
+	            .map(function (res) { return res.json(); });
+	    };
+	    /*logout() {
+	        localStorage.removeItem('username');
+	    }*/
+	    AdminServices.prototype.getAllPosts = function () {
+	        return this._http.get('/api/posts').map(function (res) { return res.json(); });
+	    };
+	    AdminServices.prototype.addNewReply = function (id, post) {
+	        return this._http.put('/api/replies' + "/" + id, post).map(function (res) { return res.json(); });
+	    };
+	    AdminServices.prototype.postNewComment = function (post) {
+	        return this._http.post('/api/post', post)
+	            .map(function (res) { return res.json(); });
+	    };
+	    return AdminServices;
+	}());
+	AdminServices = __decorate([
+	    core_1.Injectable(),
+	    __metadata("design:paramtypes", [http_1.Http])
+	], AdminServices);
+	exports.AdminServices = AdminServices;
+
+
+/***/ },
+/* 65 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var Observable_1 = __webpack_require__(3);
+	var map_1 = __webpack_require__(52);
+	Observable_1.Observable.prototype.map = map_1.map;
+	//# sourceMappingURL=map.js.map
+
+/***/ },
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65599,8 +65757,8 @@ webpackJsonp([0],[
 	var core_1 = __webpack_require__(1);
 	var forms_1 = __webpack_require__(24);
 	var router_1 = __webpack_require__(29);
-	var user_1 = __webpack_require__(64);
-	var info_service_1 = __webpack_require__(65);
+	var user_1 = __webpack_require__(63);
+	var info_service_1 = __webpack_require__(64);
 	var component_service_1 = __webpack_require__(67);
 	var HeaderComponent = (function () {
 	    function HeaderComponent(_adminService, _formBuilder, _router, _componentService, _activatedRoute) {
@@ -65685,79 +65843,6 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 64 */
-/***/ function(module, exports) {
-
-	"use strict";
-	var Login = (function () {
-	    function Login() {
-	    }
-	    return Login;
-	}());
-	exports.Login = Login;
-	var SignUp = (function () {
-	    function SignUp() {
-	    }
-	    return SignUp;
-	}());
-	exports.SignUp = SignUp;
-
-
-/***/ },
-/* 65 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var core_1 = __webpack_require__(1);
-	var http_1 = __webpack_require__(28);
-	__webpack_require__(66);
-	var AdminServices = (function () {
-	    function AdminServices(_http) {
-	        this._http = _http;
-	        this._url = "/api/info";
-	        this._userUrl = '/api/userinfo';
-	    }
-	    AdminServices.prototype.getAdmins = function () {
-	        return this._http.get(this._url).map(function (res) { return res.json(); });
-	    };
-	    AdminServices.prototype.getUser = function (username) {
-	        return this._http.get(this._userUrl + "/" + username)
-	            .map(function (res) { return res.json(); });
-	    };
-	    AdminServices.prototype.postUser = function (user) {
-	        console.log(user);
-	        return this._http.post(this._url, user)
-	            .map(function (res) { return res.json(); });
-	    };
-	    return AdminServices;
-	}());
-	AdminServices = __decorate([
-	    core_1.Injectable(),
-	    __metadata("design:paramtypes", [http_1.Http])
-	], AdminServices);
-	exports.AdminServices = AdminServices;
-
-
-/***/ },
-/* 66 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var Observable_1 = __webpack_require__(3);
-	var map_1 = __webpack_require__(52);
-	Observable_1.Observable.prototype.map = map_1.map;
-	//# sourceMappingURL=map.js.map
-
-/***/ },
 /* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -65792,7 +65877,7 @@ webpackJsonp([0],[
 /* 68 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"header\">\r\n    <div class=\"container\">\r\n        <div class=\"row\">\r\n            <div class=\"col-md-6 col-lg-6 col-sm-5\">\r\n                <div class=\"logo\">\r\n                    <h1 class=\"clickable\" routerLink=\"\">test</h1>\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6 col-lg-6 hidden-xs\">\r\n                <div *ngIf=\"loggedIn\" class=\"loggedin\">\r\n                    <div class=\"row\">\r\n                        <div class=\"col-lg-1 cols cols-profile_img nopadding\">\r\n                            <img src=\"assets/img/{{userDetails.profile_img == 'true' ? userDetails.username : 'no' }}_pf_img_sm.jpg\" class=\"img-rounded\" alt=\"profile_img\"/>\r\n                        </div>\r\n                        <div class=\"col-lg-4 cols cols-user_name\">\r\n                            <div class=\"user_name\"><span>{{ userDetails.name}}</span> </div>   \r\n                        </div>\r\n                        <div class=\"col-lg-4 cols cols-user_name\">\r\n                            <div class=\"user_name clickable\">\r\n                                <i class=\"glyphicon glyphicon-globe\"></i>\r\n                            </div>\r\n                            <div class=\"dropdown user_name clickable\">\r\n                                <i class=\"glyphicon glyphicon-user dropdown-toggle\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n                                </i>\r\n                                <ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\r\n                                    <li><a href=\"#\">Action</a></li>\r\n                                    <li><a href=\"#\">Another action</a></li>\r\n                                    <li><a href=\"#\">Something else here</a></li>\r\n                                    <li role=\"separator\" class=\"divider\"></li>\r\n                                    <li><a class=\"clickable\" (click)=\"logout()\">Logout?</a></li>\r\n                                </ul>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                \r\n                <div class=\"login_panel\" *ngIf=\"!loggedIn\">\r\n                    <form [formGroup]=\"form\" (ngSubmit)=\"login()\">\r\n                        <fieldset>\r\n                            <div class=\"row\">\r\n                                <div class=\"col-lg-5 col-md-5 col-sm-5\">\r\n                                    <div class=\"form-group\">\r\n                                        <label for=\"username\">Email or Username</label>\r\n                                        <input type=\"text\" \r\n                                        name=\"username\"\r\n                                        #username\r\n                                        formControlName=\"username\"\r\n                                        [(ngModel)] = \"user.username\"\r\n                                        id=\"username\" \r\n                                        class=\"username\"\r\n                                        required/>\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"col-lg-5 col-md-5 col-sm-5\">\r\n                                    <div class=\"form-group\">\r\n                                        <label for=\"password\">Password</label>\r\n                                        <input type=\"password\" \r\n                                        name=\"password\"\r\n                                        formControlName=\"password\"\r\n                                        [(ngModel)] = \"user.password\"\r\n                                        #password\r\n                                        id=\"password\" \r\n                                        class=\"password\"\r\n                                        required/>\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"col-lg-2 col-md-2 nopadding\">\r\n                                    <div class=\"form-group\">\r\n                                        <button type=\"submit\" name=\"login_submit\" id=\"login_submit\" class=\"login_submit btn btn-basic btn-xs\">Login</button>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </fieldset>\r\n                    </form>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
+	module.exports = "<div class=\"header\">\r\n    <div class=\"container\">\r\n        <div class=\"row\">\r\n            <div class=\"col-md-6 col-lg-6 col-sm-5\">\r\n                <div class=\"logo\">\r\n                    <h1 class=\"clickable\" routerLink=\"\">Test</h1>\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6 col-lg-6 hidden-xs\">\r\n                <div *ngIf=\"loggedIn\" class=\"loggedin\">\r\n                    <div class=\"row\">\r\n                        <div class=\"col-lg-1 cols cols-profile_img nopadding\">\r\n                            <img src=\"assets/img/{{userDetails.profile_img == 'true' ? userDetails.username : 'no' }}_pf_img_sm.jpg\" class=\"img-rounded\" alt=\"profile_img\"/>\r\n                        </div>\r\n                        <div class=\"col-lg-4 cols cols-user_name\">\r\n                            <div class=\"user_name\"><span>{{ userDetails.name}}</span> </div>   \r\n                        </div>\r\n                        <div class=\"col-lg-4 cols cols-user_name\">\r\n                            <div class=\"user_name clickable\">\r\n                                <i class=\"glyphicon glyphicon-globe\"></i>\r\n                            </div>\r\n                            <div class=\"dropdown user_name clickable\">\r\n                                <i class=\"glyphicon glyphicon-user dropdown-toggle\" id=\"dropdownMenu1\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"true\">\r\n                                </i>\r\n                                <ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\r\n                                    <li><a href=\"#\">Action</a></li>\r\n                                    <li><a href=\"#\">Another action</a></li>\r\n                                    <li><a href=\"#\">Something else here</a></li>\r\n                                    <li role=\"separator\" class=\"divider\"></li>\r\n                                    <li><a class=\"clickable\" (click)=\"logout()\">Logout?</a></li>\r\n                                </ul>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                \r\n                <div class=\"login_panel\" *ngIf=\"!loggedIn\">\r\n                    <form [formGroup]=\"form\" (ngSubmit)=\"login()\">\r\n                        <fieldset>\r\n                            <div class=\"row\">\r\n                                <div class=\"col-lg-5 col-md-5 col-sm-5\">\r\n                                    <div class=\"form-group\">\r\n                                        <label for=\"username\">Email or Username</label>\r\n                                        <input type=\"text\" \r\n                                        name=\"username\"\r\n                                        #username\r\n                                        formControlName=\"username\"\r\n                                        [(ngModel)] = \"user.username\"\r\n                                        id=\"username\" \r\n                                        class=\"username\"\r\n                                        required/>\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"col-lg-5 col-md-5 col-sm-5\">\r\n                                    <div class=\"form-group\">\r\n                                        <label for=\"password\">Password</label>\r\n                                        <input type=\"password\" \r\n                                        name=\"password\"\r\n                                        formControlName=\"password\"\r\n                                        [(ngModel)] = \"user.password\"\r\n                                        #password\r\n                                        id=\"password\" \r\n                                        class=\"password\"\r\n                                        required/>\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"col-lg-2 col-md-2 nopadding\">\r\n                                    <div class=\"form-group\">\r\n                                        <button type=\"submit\" name=\"login_submit\" id=\"login_submit\" class=\"login_submit btn btn-basic btn-xs\">Login</button>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </fieldset>\r\n                    </form>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
 
 /***/ },
 /* 69 */
@@ -65804,7 +65889,7 @@ webpackJsonp([0],[
 /* 70 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"container\">\r\n    This is home content\r\n</div>"
+	module.exports = "<div class=\"container well\">\r\n    <div class=\"col-lg-12\">\r\n      <form [formGroup]=\"postnewcomment\" (ngSubmit)=\"postNewComment()\">\r\n           <div class=\"form-group\">\r\n                <input type=\"text\" \r\n                name=\"post\" \r\n                id=\"post\" \r\n                formControlName= \"post\"\r\n                class=\"form-control\"\r\n                minlength=\"1\"\r\n                [(ngModel)] = \"newPost.post\"\r\n                placeholder=\"post\"/>\r\n           </div>\r\n      </form>  \r\n    </div>\r\n    <div class=\"col-lg-12\" *ngFor=\"let post of posts; let i=index\">\r\n        <ul class=\"media-list\">\r\n            <li class=\"media\">\r\n                <div class=\"media-left\">\r\n                    <a href=\"#\">\r\n                        <img class=\"media-object\" src=\"assets/img/{{ post.profile_img == 'true' ?  post.posts.username : 'no'}}_pf_img_sm.jpg\" alt=\"...\">\r\n                    </a>\r\n                </div>\r\n                <div class=\"media-body\">\r\n                    <h4 class=\"media-heading\">{{post.posts.username}}</h4>\r\n                    <p>{{post.posts.post}}</p>\r\n                    <div class=\"row\">\r\n                        <div class=\"col-lg-12\">\r\n                            <b> <span class=\"clickable\">Like</span> | <span class=\"clickable\" (click)=\"toggle($event, i)\"> Comment</span> </b>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"hidden user_activites-{{i}}\">\r\n                        <div class=\"comment_box\">\r\n                            <form [formGroup]=\"newReply\" (ngSubmit)=\"commentForPost(post.posts)\">\r\n                                <div class=\"form-group\">\r\n                                    <input type=\"text\" \r\n                                    name=\"comment\" \r\n                                    id=\"comment\" \r\n                                    class=\"form-control\"\r\n                                    formControlName= \"comment\"\r\n                                    placeholder=\"comment\"\r\n                                    minlength=\"1\"/>\r\n                                </div>\r\n                            </form>\r\n                        </div>\r\n                        <div class=\"replies\" *ngIf=\"post.posts.replies.length > 0\">\r\n                            <p *ngFor=\"let reply of post.posts.replies | reverse\">\r\n                                <img width=\"20\" class=\"media-object pull-left\" src=\"assets/img/{{reply.username}}_pf_img_sm.jpg\" alt=\"...\">\r\n                                <a class=\"replies\">{{reply.username}}</a> {{reply.reply}}\r\n                            </p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </li>\r\n        </ul>\r\n    </div>\r\n</div>"
 
 /***/ },
 /* 71 */
@@ -65823,10 +65908,10 @@ webpackJsonp([0],[
 	var core_1 = __webpack_require__(1);
 	var router_1 = __webpack_require__(29);
 	var forms_1 = __webpack_require__(24);
-	var info_service_1 = __webpack_require__(65);
+	var info_service_1 = __webpack_require__(64);
 	var component_service_1 = __webpack_require__(67);
-	var user_1 = __webpack_require__(64);
-	var header_component_1 = __webpack_require__(63);
+	var user_1 = __webpack_require__(63);
+	var header_component_1 = __webpack_require__(66);
 	var SignupComponent = (function () {
 	    function SignupComponent(_formBuilder, _adminService, _componentService, _router, _activatedRoute, _headerComp) {
 	        this._formBuilder = _formBuilder;
@@ -65955,6 +66040,38 @@ webpackJsonp([0],[
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(1);
+	var ReversePipe = (function () {
+	    function ReversePipe() {
+	    }
+	    ReversePipe.prototype.transform = function (items, field, value) {
+	        return items.reverse();
+	    };
+	    return ReversePipe;
+	}());
+	ReversePipe = __decorate([
+	    core_1.Pipe({
+	        name: 'reverse'
+	    }),
+	    __metadata("design:paramtypes", [])
+	], ReversePipe);
+	exports.ReversePipe = ReversePipe;
+
+
+/***/ },
+/* 76 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
 	var router_1 = __webpack_require__(29);
 	var home_component_1 = __webpack_require__(62);
 	var signup_component_1 = __webpack_require__(71);
@@ -65969,7 +66086,7 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports) {
 
 	"use strict";

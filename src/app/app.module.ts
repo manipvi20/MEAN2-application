@@ -10,6 +10,9 @@ import { HeaderComponent } from './components/header/header.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { NotFoundComponent } from './not-found.component';
 
+//pipes
+import { ReversePipe } from './pipes/pipes';
+
 import { appRouterModule } from './app.routing';
 import { PreventUnsavedChanges } from './auth.gaurd';
 
@@ -30,7 +33,8 @@ import { ComponentService } from './services/component.service';
       HomeComponent,
       HeaderComponent,
       SignupComponent,
-      NotFoundComponent
+      NotFoundComponent,
+      ReversePipe
     ],
   bootstrap: [AppComponent],
   providers: [

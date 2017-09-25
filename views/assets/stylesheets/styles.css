@@ -19,3 +19,6 @@
 .body_wrapper {
   padding: 0;
 }
+a.replies {
+    padding-left: 10px;
+}

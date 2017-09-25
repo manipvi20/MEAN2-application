@@ -24,4 +24,18 @@ export class AdminServices {
     /*logout() {
         localStorage.removeItem('username');
     }*/
+
+    getAllPosts() {
+        return this._http.get('/api/posts').map(res=>res.json());
+    }
+    
+    addNewReply(id, post) {
+        return this._http.put('/api/replies'+ "/" + id, post).map(res=>res.json());
+    }
+
+    postNewComment(post) {
+        return this._http.post('/api/post', post)
+        .map(res=>res.json());
+    }
+
 }
