@@ -13,4 +13,16 @@ export class SignUp {
     seceret_ans?: string;
 }
 
+export class PostReply {
+    username: string;
+    reply: string;
+}
+
+export class NewPost {
+    posts?: any;
+    username: string;
+    post: string;
+    replies?: any[];
+}
+
 

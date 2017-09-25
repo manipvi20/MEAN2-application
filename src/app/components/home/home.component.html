@@ -1,3 +1,57 @@
-<div class="container">
-    This is home content
+<div class="container well">
+    <div class="col-lg-12">
+      <form [formGroup]="postnewcomment" (ngSubmit)="postNewComment()">
+           <div class="form-group">
+                <input type="text" 
+                name="post" 
+                id="post" 
+                formControlName= "post"
+                class="form-control"
+                minlength="1"
+                [(ngModel)] = "newPost.post"
+                placeholder="post"/>
+           </div>
+      </form>  
+    </div>
+    <div class="col-lg-12" *ngFor="let post of posts; let i=index">
+        <ul class="media-list">
+            <li class="media">
+                <div class="media-left">
+                    <a href="#">
+                        <img class="media-object" src="assets/img/{{ post.profile_img == 'true' ?  post.posts.username : 'no'}}_pf_img_sm.jpg" alt="...">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">{{post.posts.username}}</h4>
+                    <p>{{post.posts.post}}</p>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <b> <span class="clickable">Like</span> | <span class="clickable" (click)="toggle($event, i)"> Comment</span> </b>
+                        </div>
+                    </div>
+                    <div class="hidden user_activites-{{i}}">
+                        <div class="comment_box">
+                            <form [formGroup]="newReply" (ngSubmit)="commentForPost(post.posts)">
+                                <div class="form-group">
+                                    <input type="text" 
+                                    name="comment" 
+                                    id="comment" 
+                                    class="form-control"
+                                    formControlName= "comment"
+                                    placeholder="comment"
+                                    minlength="1"/>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="replies" *ngIf="post.posts.replies.length > 0">
+                            <p *ngFor="let reply of post.posts.replies | reverse">
+                                <img width="20" class="media-object pull-left" src="assets/img/{{reply.username}}_pf_img_sm.jpg" alt="...">
+                                <a class="replies">{{reply.username}}</a> {{reply.reply}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
 </div>
