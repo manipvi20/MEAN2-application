@@ -31,7 +31,7 @@
                     </div>
                     <div class="hidden user_activites-{{i}}">
                         <div class="comment_box">
-                            <form [formGroup]="newReply" (ngSubmit)="commentForPost(post.posts)">
+                            <form [formGroup]="newReply" (ngSubmit)="commentForPost(post.posts, $event)" autocomplete="off">
                                 <div class="form-group">
                                     <input type="text" 
                                     name="comment" 

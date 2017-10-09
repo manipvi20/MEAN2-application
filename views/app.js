@@ -65591,7 +65591,7 @@ webpackJsonp([0],[
 	            _this.posts = res.reverse();
 	        });
 	    };
-	    HomeComponent.prototype.commentForPost = function (post) {
+	    HomeComponent.prototype.commentForPost = function (post, e) {
 	        var _this = this;
 	        this.postReply = {
 	            username: this.loggedInCheck,
@@ -65599,7 +65599,9 @@ webpackJsonp([0],[
 	        };
 	        this.postReply.username = this.loggedInCheck;
 	        post.replies.unshift(this.postReply);
-	        this._adminService.addNewReply(post._id, this.postReply).subscribe(function (res) { _this.postReply = new user_1.PostReply(); });
+	        this._adminService.addNewReply(post._id, this.postReply).subscribe(function (res) { _this.postReply = new user_1.PostReply(); }, function (err) { }, function () {
+	            _this.newReply.reset();
+	        });
 	    };
 	    HomeComponent.prototype.postNewComment = function () {
 	        var _this = this;
@@ -65609,11 +65611,18 @@ webpackJsonp([0],[
 	            posts: this.newPost,
 	            profile_img: this._headerComp.userDetails.profile_img
 	        };
-	        this.posts.unshift(dummyPosts);
-	        this._adminService.postNewComment(this.newPost).subscribe(function (res) {
-	            _this.newPost = new user_1.NewPost();
-	            //this.loadPosts()
-	        });
+	        // this.posts.unshift(dummyPosts);
+	        if (this.newPost.post != undefined) {
+	            this._adminService.postNewComment(this.newPost).subscribe(function (res) {
+	                _this.newPost = new user_1.NewPost();
+	                //this.loadPosts()
+	            }, function (err) {
+	                if (err)
+	                    return;
+	            }, function () {
+	                _this.posts.unshift(dummyPosts);
+	            });
+	        }
 	    };
 	    HomeComponent.prototype.toggle = function (e, i) {
 	        var userActivityEle = this.elRef.nativeElement.querySelector('.user_activites-' + i);
@@ -65889,7 +65898,7 @@ webpackJsonp([0],[
 /* 70 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"container well\">\r\n    <div class=\"col-lg-12\">\r\n      <form [formGroup]=\"postnewcomment\" (ngSubmit)=\"postNewComment()\">\r\n           <div class=\"form-group\">\r\n                <input type=\"text\" \r\n                name=\"post\" \r\n                id=\"post\" \r\n                formControlName= \"post\"\r\n                class=\"form-control\"\r\n                minlength=\"1\"\r\n                [(ngModel)] = \"newPost.post\"\r\n                placeholder=\"post\"/>\r\n           </div>\r\n      </form>  \r\n    </div>\r\n    <div class=\"col-lg-12\" *ngFor=\"let post of posts; let i=index\">\r\n        <ul class=\"media-list\">\r\n            <li class=\"media\">\r\n                <div class=\"media-left\">\r\n                    <a href=\"#\">\r\n                        <img class=\"media-object\" src=\"assets/img/{{ post.profile_img == 'true' ?  post.posts.username : 'no'}}_pf_img_sm.jpg\" alt=\"...\">\r\n                    </a>\r\n                </div>\r\n                <div class=\"media-body\">\r\n                    <h4 class=\"media-heading\">{{post.posts.username}}</h4>\r\n                    <p>{{post.posts.post}}</p>\r\n                    <div class=\"row\">\r\n                        <div class=\"col-lg-12\">\r\n                            <b> <span class=\"clickable\">Like</span> | <span class=\"clickable\" (click)=\"toggle($event, i)\"> Comment</span> </b>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"hidden user_activites-{{i}}\">\r\n                        <div class=\"comment_box\">\r\n                            <form [formGroup]=\"newReply\" (ngSubmit)=\"commentForPost(post.posts)\">\r\n                                <div class=\"form-group\">\r\n                                    <input type=\"text\" \r\n                                    name=\"comment\" \r\n                                    id=\"comment\" \r\n                                    class=\"form-control\"\r\n                                    formControlName= \"comment\"\r\n                                    placeholder=\"comment\"\r\n                                    minlength=\"1\"/>\r\n                                </div>\r\n                            </form>\r\n                        </div>\r\n                        <div class=\"replies\" *ngIf=\"post.posts.replies.length > 0\">\r\n                            <p *ngFor=\"let reply of post.posts.replies | reverse\">\r\n                                <img width=\"20\" class=\"media-object pull-left\" src=\"assets/img/{{reply.username}}_pf_img_sm.jpg\" alt=\"...\">\r\n                                <a class=\"replies\">{{reply.username}}</a> {{reply.reply}}\r\n                            </p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </li>\r\n        </ul>\r\n    </div>\r\n</div>"
+	module.exports = "<div class=\"container well\">\r\n    <div class=\"col-lg-12\">\r\n      <form [formGroup]=\"postnewcomment\" (ngSubmit)=\"postNewComment()\">\r\n           <div class=\"form-group\">\r\n                <input type=\"text\" \r\n                name=\"post\" \r\n                id=\"post\" \r\n                formControlName= \"post\"\r\n                class=\"form-control\"\r\n                minlength=\"1\"\r\n                [(ngModel)] = \"newPost.post\"\r\n                placeholder=\"post\"/>\r\n           </div>\r\n      </form>  \r\n    </div>\r\n    <div class=\"col-lg-12\" *ngFor=\"let post of posts; let i=index\">\r\n        <ul class=\"media-list\">\r\n            <li class=\"media\">\r\n                <div class=\"media-left\">\r\n                    <a href=\"#\">\r\n                        <img class=\"media-object\" src=\"assets/img/{{ post.profile_img == 'true' ?  post.posts.username : 'no'}}_pf_img_sm.jpg\" alt=\"...\">\r\n                    </a>\r\n                </div>\r\n                <div class=\"media-body\">\r\n                    <h4 class=\"media-heading\">{{post.posts.username}}</h4>\r\n                    <p>{{post.posts.post}}</p>\r\n                    <div class=\"row\">\r\n                        <div class=\"col-lg-12\">\r\n                            <b> <span class=\"clickable\">Like</span> | <span class=\"clickable\" (click)=\"toggle($event, i)\"> Comment</span> </b>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"hidden user_activites-{{i}}\">\r\n                        <div class=\"comment_box\">\r\n                            <form [formGroup]=\"newReply\" (ngSubmit)=\"commentForPost(post.posts, $event)\" autocomplete=\"off\">\r\n                                <div class=\"form-group\">\r\n                                    <input type=\"text\" \r\n                                    name=\"comment\" \r\n                                    id=\"comment\" \r\n                                    class=\"form-control\"\r\n                                    formControlName= \"comment\"\r\n                                    placeholder=\"comment\"\r\n                                    minlength=\"1\"/>\r\n                                </div>\r\n                            </form>\r\n                        </div>\r\n                        <div class=\"replies\" *ngIf=\"post.posts.replies.length > 0\">\r\n                            <p *ngFor=\"let reply of post.posts.replies | reverse\">\r\n                                <img width=\"20\" class=\"media-object pull-left\" src=\"assets/img/{{reply.username}}_pf_img_sm.jpg\" alt=\"...\">\r\n                                <a class=\"replies\">{{reply.username}}</a> {{reply.reply}}\r\n                            </p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </li>\r\n        </ul>\r\n    </div>\r\n</div>"
 
 /***/ },
 /* 71 */
