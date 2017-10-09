@@ -54,7 +54,7 @@ export class HomeComponent implements OnInit {
          }
       );
     }
-    commentForPost(post){
+    commentForPost(post, e){
       this.postReply = <any>{
         username: this.loggedInCheck,
         reply: this.newReply.value.comment
@@ -62,7 +62,11 @@ export class HomeComponent implements OnInit {
       this.postReply.username = this.loggedInCheck;
       post.replies.unshift(this.postReply);
       this._adminService.addNewReply(post._id, this.postReply).subscribe(
-        res => { this.postReply = new PostReply() }
+        res => { this.postReply = new PostReply() },
+        err=>{},
+        ()=>{
+          this.newReply.reset()
+        }
       )
     }
 
@@ -73,12 +77,21 @@ export class HomeComponent implements OnInit {
         posts: this.newPost,
         profile_img: this._headerComp.userDetails.profile_img
        };
-      this.posts.unshift(dummyPosts);
+     // this.posts.unshift(dummyPosts);
+     if(this.newPost.post != undefined) {
       this._adminService.postNewComment(this.newPost).subscribe(
         res=>{this.newPost = new NewPost() 
           //this.loadPosts()
-        }
+        },
+        err=> { 
+          if(err)
+            return;
+        
+      },
+        ()=> {
+          this.posts.unshift(dummyPosts);}
       );
+     }
     }
 
 
